@@ -5,6 +5,7 @@ import pickle
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
 import random
+import os
 
 app = Flask(__name__)
 
@@ -84,8 +85,9 @@ class GymRecommendationModel:
 
         return [recommendation_1] + simulated_recommendations
 
-# Load the pickled GymRecommendationModel
-with open('/Users/keerthanagc/Downloads/AI/model.pkl', 'rb') as file:
+# Load the pickled GymRecommendationModel using a relative path
+MODEL_PATH = os.path.join(os.path.dirname(__file__), 'model.pkl')
+with open(MODEL_PATH, 'rb') as file:
     model = pickle.load(file)
 
 @app.route('/')
@@ -117,4 +119,6 @@ def predict():
                          predict_text="Here are your personalized workout and diet recommendations:")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use the PORT environment variable provided by Render, default to 5000 for local testing
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
